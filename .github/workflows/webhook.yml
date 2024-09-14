@@ -1,0 +1,17 @@
+name: Webhook Trigger  
+
+on:  
+  push:  
+    branches:  
+      - main  
+  pull_request:  
+    branches:  
+      - main  
+
+jobs:  
+  send_webhook:  
+    runs-on: ubuntu-latest  
+    steps:  
+      - name: Send Webhook  
+        run: |  
+          curl -X POST -H "Content-Type: application/json" -d '{"action": "${{ github.event.action }}", "repository": "${{ github.repository }}", "ref": "${{ github.ref }}", "actor": "${{ github.actor }}", "timestamp": "${{ github.event.head_commit.timestamp }}"}' http://<your-webhook-endpoint>
