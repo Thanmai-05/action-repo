@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Table</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        @media screen and (max-width: 600px) {
+        table {
+            width: 100%;
+        }
+        th, td {
+            display: block;
+        }
+        th {
+            position: sticky;
+            top: 0;
+            background-color: #f2f2f2;
+        }
+        td {
+            border: none;
+            position: relative;
+            padding-left: 50%;
+        }
+        td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        padding-right: 10px;
+        }
+    }
+    </style>
+    <script>    
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById("myTable");
+            switching = true;
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+            
+            }
+        </script>
+        
+</head>
+
+<body>
+    <table id="myTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Name</th>
+                <th onclick="sortTable(1)">Age</th>
+                <th onclick="sortTable(2)">Country</th>
+                <th onclick="sortTable(3)">Job Title</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td data-label="Name">John Doe</td>
+                <td data-label="Age">35</td>
+                <td data-label="Country">USA</td>
+                <td data-label="Job Title">Software Engineer</td>
+            </tr>
+            <tr>
+                <td data-label="Name">Jane Smith</td>
+                <td data-label="Age">32</td>
+                <td data-label="Country">UK</td>
+                <td data-label="
+                Job Title">Product Manager</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <form action="/submit_form" method="post">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age">
+                        <label for="country">Country:</label>
+                        <input type="text" id="country" name="country">
+                        <label for="job_title">Job Title:</label>
+                        <input type="text" id="job_title" name="job_title">
+                        <input type="submit" value="Submit">
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">Total: 2 rows</td>
+            </tr>
+        </tfoot>
