@@ -14,4 +14,60 @@ jobs:
     steps:  
       - name: Send Webhook  
         run: |  
-          curl -X POST -H "Content-Type: application/json" -d '{"action": "${{ github.event.action }}", "repository": "${{ github.repository }}", "ref": "${{ github.ref }}", "actor": "${{ github.actor }}", "timestamp": "${{ github.event.head_commit.timestamp }}"}' https://07b4-2406-7400-3b-8435-8df2-7e7-138-b8eb.ngrok-free.app/webhook  
+          # Prepare common payload
+          EVENT_NAME="${{ github.event_name }}"
+          REPO_NAME="${{ github.repository }}"
+          REF="${{ github.ref }}"
+          ACTOR="${{ github.actor }}"
+          TIMESTAMP=$(date --utc +%Y-%m-%dT%H:%M:%SZ)
+          
+          # Conditional logic for event type
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            curl -X POST -H "Content-Type: application/json" -d '{
+              "action": "push", 
+              "repository": {
+                "full_name": "'$REPO_NAME'"
+              },
+              "ref": "'$REF'", 
+              "sender": {
+                "login": "'$ACTOR'"
+              },
+              "head_commit": {
+                "timestamp": "'${{ github.event.head_commit.timestamp }}'"
+              }
+            }' https://07b4-2406-7400-3b-8435-8df2-7e7-138-b8eb.ngrok-free.app/webhook
+
+          elif [[ "$EVENT_NAME" == "pull_request" ]]; then
+            ACTION="${{ github.event.action }}"
+            FROM_BRANCH="${{ github.event.pull_request.head.ref }}"
+            TO_BRANCH="${{ github.event.pull_request.base.ref }}"
+
+            # Check if the pull request is merged
+            if [[ "$ACTION" == "closed" && "${{ github.event.pull_request.merged }}" == "true" ]]; then
+              curl -X POST -H "Content-Type: application/json" -d '{
+                "action": "merge", 
+                "repository": {
+                  "full_name": "'$REPO_NAME'"
+                },
+                "from_branch": "'$FROM_BRANCH'",
+                "to_branch": "'$TO_BRANCH'",
+                "sender": {
+                  "login": "'$ACTOR'"
+                },
+                "timestamp": "'$TIMESTAMP'"
+              }' https://07b4-2406-7400-3b-8435-8df2-7e7-138-b8eb.ngrok-free.app/webhook
+            else
+              curl -X POST -H "Content-Type: application/json" -d '{
+                "action": "pull_request", 
+                "repository": {
+                  "full_name": "'$REPO_NAME'"
+                },
+                "from_branch": "'$FROM_BRANCH'",
+                "to_branch": "'$TO_BRANCH'",
+                "sender": {
+                  "login": "'$ACTOR'"
+                },
+                "timestamp": "'$TIMESTAMP'"
+              }' https://07b4-2406-7400-3b-8435-8df2-7e7-138-b8eb.ngrok-free.app/webhook
+            fi
+          fi
