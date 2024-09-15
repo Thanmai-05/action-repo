@@ -14,4 +14,4 @@ jobs:
     steps:  
       - name: Send Webhook  
         run: |  
-          curl -X POST -H "Content-Type: application/json" -d '{"action": "${{ github.event.action }}", "repository": "${{ github.repository }}", "ref": "${{ github.ref }}", "actor": "${{ github.actor }}", "timestamp": "${{ github.event.head_commit.timestamp }}"}' https://1c4f-2406-7400-3b-8435-8df2-7e7-138-b8eb.ngrok-free.app  
+          curl -X POST -H "Content-Type: application/json" -d '{"action": "${{ github.event.action }}", "repository": "${{ github.repository }}", "ref": "${{ github.ref }}", "actor": "${{ github.actor }}", "timestamp": "${{ github.event.head_commit.timestamp }}"}' https://1c4f-2406-7400-3b-8435-8df2-7e7-138-b8eb.ngrok-free.app/webhook  
